@@ -23,6 +23,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
-        $this->app->singleton(ImageResizer::class, fn($app) => new ImageResizerAdapter());
+        $this->app->singleton(ImageResizer::class, static fn($app) => new ImageResizerAdapter());
     }
 }

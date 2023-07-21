@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Todo\Commands\DoneTodoItemCommand;
+use App\Todo\Commands\UndoneTodoItemCommand;
 use App\Todo\Commands\UploadImageCommand;
 use App\Todo\Handlers\CreateTodoItemCommandHandler;
+use App\Todo\Handlers\DoneTodoItemCommandHandler;
+use App\Todo\Handlers\UndoneTodoItemCommandHandler;
 use App\Todo\Handlers\UploadImageCommandHandler;
 use App\Todo\Models\TodoItem;
 use App\Todo\Requests\TodoImageRequest;
 use App\Todo\Requests\TodoItemRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 final class TodoController extends Controller
@@ -38,10 +44,26 @@ final class TodoController extends Controller
         return response()->json($handler->handle($request->getCommand()));
     }
 
-    public function uploadImage(TodoImageRequest $request, TodoItem $item, UploadImageCommandHandler $handler)
+    public function uploadImage(
+        TodoImageRequest          $request,
+        TodoItem                  $item,
+        UploadImageCommandHandler $handler
+    ): RedirectResponse
     {
-        // TODO: Gate can upload
         $handler->handle(new UploadImageCommand($item, $request->getImage()));
+        return back();
+    }
+
+    public function done(TodoItem $item, DoneTodoItemCommandHandler $handler): Response
+    {
+        $handler->handle(new DoneTodoItemCommand($item));
+        return response()->noContent();
+    }
+
+    public function undone(TodoItem $item, UndoneTodoItemCommandHandler $handler): Response
+    {
+        $handler->handle(new UndoneTodoItemCommand($item));
+        return response()->noContent();
     }
 
     public function update(TodoItemRequest $request, TodoItem $todoItem)
@@ -50,8 +72,9 @@ final class TodoController extends Controller
 
     }
 
-    public function destroy(TodoItem $todoItem)
+    public function destroy(TodoItem $item): RedirectResponse
     {
-        // TODO: Gate can delete
+        $item->delete();
+        return back();
     }
 }

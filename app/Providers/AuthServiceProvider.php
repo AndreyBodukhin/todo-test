@@ -2,25 +2,38 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\User;
+use App\Todo\Models\TodoItem;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
-     *
      * @var array<class-string, class-string>
      */
     protected $policies = [
         //
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
     public function boot(): void
     {
-        //
+        Gate::define(
+            'todo.edit',
+            static fn(User $user, TodoItem $item) => $user->getKey() === $item->user_id
+        );
+        Gate::define(
+            'todo.delete',
+            static function(User $user, int $item) {
+                return null !== TodoItem::query()->where([
+                    'user_id' => $user->id,
+                    'id' => $item
+                ])->first();
+            }
+        );
+        Gate::define(
+            'todo.done-undone',
+            static fn(User $user, TodoItem $item) => $user->getKey() === $item->user_id
+        );
     }
 }
