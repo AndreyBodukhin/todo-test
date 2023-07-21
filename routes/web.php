@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/todo/{id}/upload-image', [TodoController::class, 'uploadImage']);
+Route::post('/todo/{item}/upload-image', [TodoController::class, 'uploadImage']);
 
 Route::resource('/todo', TodoController::class)
     ->middleware(['auth', 'verified'])

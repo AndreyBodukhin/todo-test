@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Todo\Commands\UploadImageCommand;
 use App\Todo\Handlers\CreateTodoItemCommandHandler;
+use App\Todo\Handlers\UploadImageCommandHandler;
 use App\Todo\Models\TodoItem;
 use App\Todo\Requests\TodoImageRequest;
 use App\Todo\Requests\TodoItemRequest;
@@ -31,14 +33,15 @@ final class TodoController extends Controller
         ]);
     }
 
-    public function store(TodoItemRequest $request, CreateTodoItemCommandHandler $command): JsonResponse
+    public function store(TodoItemRequest $request, CreateTodoItemCommandHandler $handler): JsonResponse
     {
-        return response()->json($command->handle($request->getCommand()));
+        return response()->json($handler->handle($request->getCommand()));
     }
 
-    public function uploadImage(TodoImageRequest $request, TodoItem $item,)
+    public function uploadImage(TodoImageRequest $request, TodoItem $item, UploadImageCommandHandler $handler)
     {
         // TODO: Gate can upload
+        $handler->handle(new UploadImageCommand($item, $request->getImage()));
     }
 
     public function update(TodoItemRequest $request, TodoItem $todoItem)

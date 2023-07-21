@@ -7,10 +7,12 @@ use App\Todo\Models\TodoItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<TodoItem>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Todo\Models\TodoItem>
  */
 class TodoItemFactory extends Factory
 {
+    protected $model = TodoItem::class;
+
     /**
      * Define the model's default state.
      *
@@ -25,10 +27,7 @@ class TodoItemFactory extends Factory
         ];
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getFirstUserId(): mixed
+    public function getFirstUserId(): ?int
     {
         static $firstUserId = null;
         return $firstUserId ??= User::all()->first()?->id;

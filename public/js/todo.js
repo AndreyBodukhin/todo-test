@@ -23,3 +23,13 @@ function todoFormSubmitHandler() {
         }
     }).then(createTodoItem);
 }
+
+document
+    .getElementById('uploadImageModal')
+    .addEventListener(
+        'shown.bs.modal',
+        (e) => {
+            let itemId = e.relatedTarget.dataset.id;
+            document
+                .querySelector('#uploadImageForm').action = `/todo/${itemId}/upload-image`;
+        });

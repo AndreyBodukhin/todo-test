@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Todo\Models\TodoItem;
+use Database\Factories\TodoItemFactory;
 use Illuminate\Database\Seeder;
 
 class TodoItemSeeder extends Seeder
@@ -12,6 +13,6 @@ class TodoItemSeeder extends Seeder
      */
     public function run(): void
     {
-        TodoItem::factory()->count(50)->create();
+        (new TodoItemFactory())->count(50)->create();
     }
 }
