@@ -2,10 +2,10 @@
 
 namespace App\Todo\Requests;
 
-use App\Todo\Commands\TodoItemCreateCommand;
+use App\Todo\Commands\CreateTodoItem;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TodoItemRequest extends FormRequest
+final class CreateTodoItemRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,9 +19,9 @@ class TodoItemRequest extends FormRequest
         ];
     }
 
-    public function getCommand(): TodoItemCreateCommand
+    public function getCommand(): CreateTodoItem
     {
-        return new TodoItemCreateCommand(
+        return new CreateTodoItem(
             Auth()->id(),
             $this->request->get('text')
         );

@@ -5,7 +5,7 @@ namespace App\Todo\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 
-class TodoImageRequest extends FormRequest
+final class UploadImageRequest extends FormRequest
 {
     public function authorize(): bool
     {

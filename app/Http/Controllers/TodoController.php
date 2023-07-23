@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Todo\Commands\DoneTodoItemCommand;
-use App\Todo\Commands\UndoneTodoItemCommand;
-use App\Todo\Commands\UploadImageCommand;
+use App\Todo\Commands\DeleteTodoItem;
+use App\Todo\Commands\DoneTodoItem;
+use App\Todo\Commands\UndoneTodoItem;
+use App\Todo\Commands\UploadImage;
 use App\Todo\Handlers\CreateTodoItemCommandHandler;
+use App\Todo\Handlers\DeleteTodoItemCommandHandler;
 use App\Todo\Handlers\DoneTodoItemCommandHandler;
 use App\Todo\Handlers\UndoneTodoItemCommandHandler;
 use App\Todo\Handlers\UploadImageCommandHandler;
 use App\Todo\Models\TodoItem;
-use App\Todo\Requests\TodoImageRequest;
-use App\Todo\Requests\TodoItemRequest;
+use App\Todo\Requests\UploadImageRequest;
+use App\Todo\Requests\CreateTodoItemRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,42 +41,39 @@ final class TodoController extends Controller
         ]);
     }
 
-    public function store(TodoItemRequest $request, CreateTodoItemCommandHandler $handler): JsonResponse
+    public function store(
+        CreateTodoItemRequest        $request,
+        CreateTodoItemCommandHandler $handler
+    ): JsonResponse
     {
         return response()->json($handler->handle($request->getCommand()));
     }
 
     public function uploadImage(
-        TodoImageRequest          $request,
+        UploadImageRequest        $request,
         TodoItem                  $item,
         UploadImageCommandHandler $handler
     ): RedirectResponse
     {
-        $handler->handle(new UploadImageCommand($item, $request->getImage()));
+        $handler->handle(new UploadImage($item, $request->getImage()));
         return back();
     }
 
     public function done(TodoItem $item, DoneTodoItemCommandHandler $handler): Response
     {
-        $handler->handle(new DoneTodoItemCommand($item));
+        $handler->handle(new DoneTodoItem($item));
         return response()->noContent();
     }
 
     public function undone(TodoItem $item, UndoneTodoItemCommandHandler $handler): Response
     {
-        $handler->handle(new UndoneTodoItemCommand($item));
+        $handler->handle(new UndoneTodoItem($item));
         return response()->noContent();
     }
 
-    public function update(TodoItemRequest $request, TodoItem $todoItem)
+    public function destroy(TodoItem $item, DeleteTodoItemCommandHandler $handler): RedirectResponse
     {
-        // TODO: Gate can update
-
-    }
-
-    public function destroy(TodoItem $item): RedirectResponse
-    {
-        $item->delete();
+        $handler->handle(new DeleteTodoItem($item));
         return back();
     }
 }
