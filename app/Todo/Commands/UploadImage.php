@@ -5,7 +5,7 @@ namespace App\Todo\Commands;
 use App\Todo\Models\TodoItem;
 use Illuminate\Http\UploadedFile;
 
-final class UploadImageCommand
+final class UploadImage
 {
     public function __construct(
         readonly TodoItem $item,

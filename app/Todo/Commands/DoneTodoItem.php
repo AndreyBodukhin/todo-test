@@ -4,7 +4,7 @@ namespace App\Todo\Commands;
 
 use App\Todo\Models\TodoItem;
 
-final class UndoneTodoItemCommand
+final class DoneTodoItem
 {
     public function __construct(
         public readonly TodoItem $item

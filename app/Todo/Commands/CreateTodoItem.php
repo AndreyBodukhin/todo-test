@@ -2,7 +2,7 @@
 
 namespace App\Todo\Commands;
 
-final class TodoItemCreateCommand
+final class CreateTodoItem
 {
     public function __construct(
         readonly int $userId,
