@@ -65,7 +65,7 @@ final class TodoController extends Controller
     ): RedirectResponse
     {
         $handler->handle(new UploadImage($item, $request->getImage()));
-        return back();
+        return back()->with('success', "Image was uploaded!");
     }
 
     public function done(TodoItem $item, DoneTodoItemCommandHandler $handler): Response
@@ -83,6 +83,6 @@ final class TodoController extends Controller
     public function destroy(TodoItem $item, DeleteTodoItemCommandHandler $handler): RedirectResponse
     {
         $handler->handle(new DeleteTodoItem($item));
-        return back();
+        return back()->with('success', "Todo was deleted! (id: {$item->id})");
     }
 }

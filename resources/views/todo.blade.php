@@ -3,7 +3,6 @@
 @section('content')
     {{-- TODO: extract meta --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="container">
         <div class="row justify-content-center">
             <div class="col-2">
                 <form action="{{ route('todo') }}" method="get">
@@ -58,7 +57,7 @@
                         <div class="col-1">
                         </div>
                         <div class="col-4 d-flex justify-content-end">
-                            <a class="edit_tags btn btn-primary me-1" href="{{ route('todo.tags', 'item_id') }}"
+                            <a class="edit_tags btn btn-primary me-1" target="_blank" href="{{ route('todo.tags', 'item_id') }}"
                                role="button">Tags</a>
                             <button type="button" class="btn btn-primary upload_image me-1"
                                     data-bs-toggle="modal"
@@ -101,7 +100,7 @@
                             </div>
                             <div class="col-4 d-flex justify-content-end">
                                 @can('todo.edit', $item)
-                                    <a class="btn btn-primary me-1" href="{{ route('todo.tags', $item->id) }}"
+                                    <a class="btn btn-primary me-1" target="_blank" href="{{ route('todo.tags', $item->id) }}"
                                        role="button">Tags</a>
                                     <button type="button" class="btn btn-primary upload_image me-1"
                                             data-bs-toggle="modal"
@@ -145,7 +144,6 @@
                     </div>
                 </form>
             </div>
-        </div>
         @endsection
 
         @section('footer')

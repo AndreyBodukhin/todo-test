@@ -73,7 +73,14 @@
         </nav>
 
         <main class="py-4">
-            @yield('content')
+            <div class="container">
+                @if ($message = Session::get('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ $message }}
+                    </div>
+                @endif
+                @yield('content')
+            </div>
         </main>
     </div>
     @yield('footer')
