@@ -4,13 +4,12 @@ namespace App\Todo\Commands\Tag;
 
 use App\Todo\Models\TodoItem;
 
-final class DeleteTag
+final class AddTag
 {
     public function __construct(
         readonly TodoItem $item,
-        readonly int $tagId
+        readonly string $tag
     )
     {
     }
 }
-

@@ -28,7 +28,8 @@
 
                         <div class="col-9">
                             <div class="d-flex align-items-center">
-                                <input class="form-check-input me-2" onchange="todoCheckboxHandler(this)" type="checkbox" value="" aria-label="..."/>
+                                <input class="form-check-input me-2" onchange="todoCheckboxHandler(this)"
+                                       type="checkbox" value="" aria-label="..."/>
                                 <span class="text"></span>
                             </div>
                         </div>
@@ -53,36 +54,41 @@
                             data-id="{{ $item->id }}"
                             class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
 
-                            <div class="col-9">
+                            <div class="col-8">
                                 <div class="d-flex align-items-center">
-                                    <input class="form-check-input me-2" type="checkbox" onchange="todoCheckboxHandler(this)" @checked($item->is_done) value="" aria-label="..."/>
+                                    <input class="form-check-input me-2" type="checkbox"
+                                           onchange="todoCheckboxHandler(this)" @checked($item->is_done) value=""
+                                           aria-label="..."/>
                                     <span class="text">{{ $item->text }}</span>
+                                    @foreach($item->tags as $tag)
+                                        <span class="badge bg-secondary">{{ $tag->name }}</span>
+                                    @endforeach
                                 </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-1">
                                 @if($item->image)
-                                    <a target="_blank" href="{{ asset('images/' . $item->image) }}">
-                                        <img width="100" height="100"
-                                             src="{{ asset('images/150x150_' . $item->image) }}" alt="Todo item img">
-                                    </a>
-                                @else
-                                    @can('todo.edit', $item)
-                                        <button type="button" class="btn btn-primary upload_image" data-bs-toggle="modal"
-                                                data-bs-target="#uploadImageModal">
-                                            Upload image
-                                        </button>
-                                    @endcan
+                                    <div class="ms-5">
+                                        <a target="_blank" href="{{ asset('images/' . $item->image) }}">
+                                            <img class="rounded-circle" width="60" height="60"
+                                                 src="{{ asset('images/150x150_' . $item->image) }}" alt="Todo item img">
+                                        </a>
+                                    </div>
                                 @endif
                             </div>
-                            <div class="col-1">
+                            <div class="col-3 d-flex justify-content-end">
                                 @can('todo.edit', $item)
-                                    <div class="col-6">
-                                        <form class="delete_item" action="{{ route('todo.destroy', $item->id) }}" method="post">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </form>
-                                    </div>
+                                    <a class="btn btn-primary me-1" href="{{ route('todo.tags', $item->id) }}" role="button">Tags</a>
+                                    <button type="button" class="btn btn-primary upload_image me-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#uploadImageModal">
+                                        Image
+                                    </button>
+                                    <form class="delete_item" action="{{ route('todo.destroy', $item->id) }}"
+                                          method="post">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
                                 @endcan
                             </div>
                         </li>
@@ -94,7 +100,6 @@
             </div>
         </div>
 
-        <!-- Modal -->
         <div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel"
              aria-hidden="true">
             <div class="modal-dialog">
