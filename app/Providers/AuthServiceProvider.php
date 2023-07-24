@@ -24,11 +24,8 @@ class AuthServiceProvider extends ServiceProvider
         );
         Gate::define(
             'todo.delete',
-            static function(User $user, int $item) {
-                return null !== TodoItem::query()->where([
-                    'user_id' => $user->id,
-                    'id' => $item
-                ])->first();
+            static function(User $user, TodoItem $item) {
+                return $user->getKey() === $item->user_id;
             }
         );
         Gate::define(
