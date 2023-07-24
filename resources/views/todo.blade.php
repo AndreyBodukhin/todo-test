@@ -5,8 +5,28 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-12">
-
+            <div class="col-2">
+                <form action="{{ route('todo') }}" method="get">
+                    <div class="row align-content-center justify-center">
+                        <input type="text" name="q" class="form-control mb-3" value="{{ request()->get('q') }}"
+                               placeholder="Type ToDo text">
+                        Tags:
+                        <select name="tags[]" class="mb-3" size="6" multiple>
+                            @foreach($tags as $tag)
+                                <option
+                                    value="{{ $tag->slug }}"
+                                    @selected(in_array($tag->slug, request()->get('tags') ?: []))
+                                >
+                                    {{ $tag->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-primary mb-3">Search</button>
+                        <a class="btn btn-danger" href="{{ route('todo') }}">Reset</a>
+                    </div>
+                </form>
+            </div>
+            <div class="col-10">
                 <form id="todo">
                     @csrf
                     <div class="row align-content-center justify-center">
@@ -24,29 +44,32 @@
                 <ul id="todo" class="list-group mb-0">
                     {{--Template todoItem--}}
                     <li
+                        data-id=""
                         class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
 
-                        <div class="col-9">
-                            <div class="d-flex align-items-center">
-                                <input class="form-check-input me-2" onchange="todoCheckboxHandler(this)"
-                                       type="checkbox" value="" aria-label="..."/>
-                                <span class="text"></span>
-                            </div>
+                        <div class="col-4">
+                            <input class="form-check-input me-2" type="checkbox"
+                                   onchange="todoCheckboxHandler(this)" value=""
+                                   aria-label="..."/>
+                            <span class="text"></span>
                         </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-primary upload_image" data-bs-toggle="modal"
-                                    data-bs-target="#uploadImageModal">
-                                Upload image
-                            </button>
+                        <div class="col-3">
                         </div>
                         <div class="col-1">
-                            <div class="col-6">
-                                <form class="delete_item" action="{{ route('todo.destroy', 'item_id') }}" method="post">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                            </div>
+                        </div>
+                        <div class="col-4 d-flex justify-content-end">
+                            <a class="edit_tags btn btn-primary me-1" href="{{ route('todo.tags', 'item_id') }}"
+                               role="button">Tags</a>
+                            <button type="button" class="btn btn-primary upload_image me-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#uploadImageModal">
+                                Image
+                            </button>
+                            <form class="delete_item" action="{{ route('todo.destroy', 'item_id') }}" method="post">
+                                @method('DELETE')
+                                @csrf
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                         </div>
                     </li>
                     @foreach($items as $item)
@@ -54,30 +77,32 @@
                             data-id="{{ $item->id }}"
                             class="list-group-item d-flex d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2">
 
-                            <div class="col-8">
-                                <div class="d-flex align-items-center">
-                                    <input class="form-check-input me-2" type="checkbox"
-                                           onchange="todoCheckboxHandler(this)" @checked($item->is_done) value=""
-                                           aria-label="..."/>
-                                    <span class="text">{{ $item->text }}</span>
-                                    @foreach($item->tags as $tag)
-                                        <span class="badge bg-secondary">{{ $tag->name }}</span>
-                                    @endforeach
-                                </div>
+                            <div class="col-4">
+                                <input class="form-check-input me-2" type="checkbox"
+                                       onchange="todoCheckboxHandler(this)" @checked($item->is_done) value=""
+                                       aria-label="..."/>
+                                <span class="text">{{ $item->text }}</span>
+                            </div>
+                            <div class="col-3">
+                                @foreach($item->tags as $tag)
+                                    <span class="badge bg-secondary">{{ $tag->name }}</span>
+                                @endforeach
                             </div>
                             <div class="col-1">
                                 @if($item->image)
                                     <div class="ms-5">
                                         <a target="_blank" href="{{ asset('images/' . $item->image) }}">
                                             <img class="rounded-circle" width="60" height="60"
-                                                 src="{{ asset('images/150x150_' . $item->image) }}" alt="Todo item img">
+                                                 src="{{ asset('images/150x150_' . $item->image) }}"
+                                                 alt="Todo item img">
                                         </a>
                                     </div>
                                 @endif
                             </div>
-                            <div class="col-3 d-flex justify-content-end">
+                            <div class="col-4 d-flex justify-content-end">
                                 @can('todo.edit', $item)
-                                    <a class="btn btn-primary me-1" href="{{ route('todo.tags', $item->id) }}" role="button">Tags</a>
+                                    <a class="btn btn-primary me-1" href="{{ route('todo.tags', $item->id) }}"
+                                       role="button">Tags</a>
                                     <button type="button" class="btn btn-primary upload_image me-1"
                                             data-bs-toggle="modal"
                                             data-bs-target="#uploadImageModal">

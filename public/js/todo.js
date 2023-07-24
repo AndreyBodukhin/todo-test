@@ -5,8 +5,12 @@ let createTodoItem = function () {
     return function (itemData) {
         template.dataset.id = itemData.id;
         template.querySelector('span.text').innerText = itemData.text;
+
         let deleteForm = template.querySelector('form.delete_item');
         deleteForm.action = deleteForm.action.replace('item_id', itemData.id);
+        let editTagsBtn = template.querySelector('a.edit_tags');
+        editTagsBtn.href = editTagsBtn.href.replace('item_id', itemData.id);
+
         document.querySelector('ul#todo').prepend(template.cloneNode(true));
     }
 }();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TodoIndexRequest;
 use App\Todo\Commands\DeleteTodoItem;
 use App\Todo\Commands\DoneTodoItem;
 use App\Todo\Commands\UndoneTodoItem;
@@ -9,14 +10,15 @@ use App\Todo\Commands\UploadImage;
 use App\Todo\Handlers\CreateTodoItemCommandHandler;
 use App\Todo\Handlers\DeleteTodoItemCommandHandler;
 use App\Todo\Handlers\DoneTodoItemCommandHandler;
+use App\Todo\Handlers\TodoQueryHandler;
 use App\Todo\Handlers\UndoneTodoItemCommandHandler;
 use App\Todo\Handlers\UploadImageCommandHandler;
 use App\Todo\Models\TodoItem;
+use App\Todo\Queries\TodoQuery;
 use App\Todo\Requests\UploadImageRequest;
 use App\Todo\Requests\CreateTodoItemRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
@@ -25,19 +27,26 @@ final class TodoController extends Controller
     private const COUNT_PER_PAGE = 10;
     private const PAGE_PARAMETER_NAME = 'page';
 
-    public function index(Request $request): View
+    public function index(TodoIndexRequest $request, TodoQueryHandler $handler): View
     {
-        $items = TodoItem::query()
-            ->where('user_id', Auth()->id())
-            ->orderByDesc('id')
-            ->paginate(
-                perPage: self::COUNT_PER_PAGE,
-                pageName: self::PAGE_PARAMETER_NAME,
-                page: $request->get(self::PAGE_PARAMETER_NAME) ?: 1,
+        $itemQuery = $handler->handle(
+            new TodoQuery(
+                userId: Auth()->id(),
+                tags: $request['tags'],
+                searchString: $request['q']
+            )
+        );
 
-            );
+        $items = $itemQuery->paginate(
+            perPage: self::COUNT_PER_PAGE,
+            pageName: self::PAGE_PARAMETER_NAME,
+            page: $request->get(self::PAGE_PARAMETER_NAME) ?: 1,
+
+        );
+
         return view('todo', [
-            'items' => $items
+            'items' => $items,
+            'tags' => TodoItem::existingTags()
         ]);
     }
 
