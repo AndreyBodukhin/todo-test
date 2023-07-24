@@ -44,3 +44,61 @@ docker-compose up -d
 docker-compose exec -d laravel.test php artisan queue:work
 docker-compose exec -d laravel.test npm run dev
 ```
+
+# P.S:
+
+Данное приложение легко укладывается в CRUD и всю логику можно было бы поместить в контроллеры.
+Но при разработке данного проекта, я старался показать понимание архитектурных приемов, поэтому сделал контроллер тонким используя подход **CQRS**.
+
+Но так же я следовал принципу **YAGNI** - поэтому не стал допускать оверхед и пытаться убрать все внешнии зависимости из хендлеров
+
+В обработчиках команд можно было бы избежать дополнительных внешних зависимостей от фреймворка.
+_Принцип DIP (Dependency Inversion Principle ) в SOLI**D**_
+
+Для этого нужно ввести дополнительные интерфейсы.
+
+
+Разберу на примере UploadImageCommandHandler
+
+```php
+final class UploadImageCommandHandler
+{
+    public function handle(UploadImage $command): void
+    {
+        $imageName = Str::uuid() . '.' . $command->image->extension();
+        $command->image->storeAs('images', $imageName);
+        $command->item->image = $imageName;
+        $command->item->save();
+        event(new ImageUploaded(storage_path('app/images') . "/$imageName"));
+    }
+}
+```
+
+Здесть есть зависимости от **Illuminate\Http\UploadedFile**, **Illuminate\Support\Str**, **Illuminate\Database\Eloquent\Model**, **event()**
+
+Добавляем интерфейсы **EntityManager**, **HashGeneratorInterface**, **ImageUploaderInterface**, **EventDispatcher**,
+для того что бы убрать эти зависимости.
+
+Реализация могла бы выглядеть так:
+```php
+final class UploadImageCommandHandler
+{
+    public function __construct(
+        readonly EntityManager          $em,
+        readonly HashGeneratorInterface $hasher,
+        readonly ImageUploaderInterface $uploader,
+        readonly EventDispatcher        $dispatcher
+    )
+    {
+    }
+
+    public function handle(UploadImage $command): void
+    {
+        $imagePath = $this->uploader->upload($command->image);
+        $command->item->setImage($imagePath);
+        $this->em->save($command->item);
+        $this->dispatcher->event(new ImageUploaded($imagePath));
+    }
+}
+
+```
