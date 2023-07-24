@@ -1,4 +1,4 @@
-Суть задания:
+## Суть задания:
 
 Тестовое задание, результат необходимо выложить в git репозиторий и написать инструкцию по деплою.
 
@@ -26,3 +26,21 @@
 
 
 Отдельный плюс, если получится самостоятельно развернуть проект и предоставить на него ссылку
+
+## Перый запуск проекта:
+
+```bash
+docker-compose up -d
+docker-compose exec laravel.test php artisan migrate:fresh --seed
+docker-compose exec -d laravel.test php artisan queue:work
+docker-compose exec laravel.test npm run build
+docker-compose exec -d laravel.test npm run dev
+```
+
+## Запуск проекта:
+
+```bash
+docker-compose up -d
+docker-compose exec -d laravel.test php artisan queue:work
+docker-compose exec -d laravel.test npm run dev
+```
